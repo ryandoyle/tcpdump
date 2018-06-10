@@ -197,7 +197,7 @@ tpaddr_print_ip(netdissect_options *ndo,
 	else if (PROTO_LEN(ap) != 4)
 		ND_PRINT("<wrong len>");
 	else
-		ND_PRINT("%s", ipaddr_string(ndo, TPA(ap)));
+		ND_PRINT_CATEGORY(CATEGORY_PROTO_CHAT_PRIMARY, "%s", ipaddr_string(ndo, TPA(ap)));
 }
 
 static void
@@ -209,7 +209,7 @@ spaddr_print_ip(netdissect_options *ndo,
 	else if (PROTO_LEN(ap) != 4)
 		ND_PRINT("<wrong len>");
 	else
-		ND_PRINT("%s", ipaddr_string(ndo, SPA(ap)));
+		ND_PRINT_CATEGORY(CATEGORY_PROTO_CHAT_PRIMARY, "%s", ipaddr_string(ndo, SPA(ap)));
 }
 
 static void
@@ -236,7 +236,7 @@ atmarp_tpaddr_print(netdissect_options *ndo,
 	else if (ATMTPROTO_LEN(ap) != 4)
 		ND_PRINT("<wrong tplen>");
 	else
-		ND_PRINT("%s", ipaddr_string(ndo, ATMTPA(ap)));
+		ND_PRINT_CATEGORY(CATEGORY_PROTO_CHAT_PRIMARY, "%s", ipaddr_string(ndo, ATMTPA(ap)));
 }
 
 static void
@@ -248,7 +248,7 @@ atmarp_spaddr_print(netdissect_options *ndo,
 	else if (ATMSPROTO_LEN(ap) != 4)
 		ND_PRINT("<wrong splen>");
 	else
-		ND_PRINT("%s", ipaddr_string(ndo, ATMSPA(ap)));
+		ND_PRINT_CATEGORY(CATEGORY_PROTO_CHAT_PRIMARY, "%s", ipaddr_string(ndo, ATMSPA(ap)));
 }
 
 static void
@@ -272,7 +272,7 @@ atmarp_print(netdissect_options *ndo,
 	}
 
         if (!ndo->ndo_eflag) {
-            ND_PRINT("ARP, ");
+            ND_PRINT_CATEGORY(CATEGORY_PROTO_NAME, "ARP, ");
         }
 
 	if ((pro != ETHERTYPE_IP && pro != ETHERTYPE_TRAIL) ||
@@ -299,7 +299,7 @@ atmarp_print(netdissect_options *ndo,
 	switch (op) {
 
 	case ARPOP_REQUEST:
-		ND_PRINT("who-has ");
+		ND_PRINT_CATEGORY(CATEGORY_PROTO_CHAT_SECONDARY, "who-has ");
 		atmarp_tpaddr_print(ndo, ap, pro);
 		if (ATMTHRD_LEN(ap) != 0) {
 			ND_PRINT(" (");
@@ -307,22 +307,22 @@ atmarp_print(netdissect_options *ndo,
 			    ATMTSA(ap), ATMTSLN(ap));
 			ND_PRINT(")");
 		}
-		ND_PRINT(" tell ");
+		ND_PRINT_CATEGORY(CATEGORY_PROTO_CHAT_SECONDARY, " tell ");
 		atmarp_spaddr_print(ndo, ap, pro);
 		break;
 
 	case ARPOP_REPLY:
 		atmarp_spaddr_print(ndo, ap, pro);
-		ND_PRINT(" is-at ");
+		ND_PRINT_CATEGORY(CATEGORY_PROTO_CHAT_SECONDARY, " is-at ");
 		atmarp_addr_print(ndo, ATMSHA(ap), ATMSHRD_LEN(ap), ATMSSA(ap),
                                   ATMSSLN(ap));
 		break;
 
 	case ARPOP_INVREQUEST:
-		ND_PRINT("who-is ");
+		ND_PRINT_CATEGORY(CATEGORY_PROTO_CHAT_SECONDARY, "who-is ");
 		atmarp_addr_print(ndo, ATMTHA(ap), ATMTHRD_LEN(ap), ATMTSA(ap),
 		    ATMTSLN(ap));
-		ND_PRINT(" tell ");
+		ND_PRINT_CATEGORY(CATEGORY_PROTO_CHAT_SECONDARY, " tell ");
 		atmarp_addr_print(ndo, ATMSHA(ap), ATMSHRD_LEN(ap), ATMSSA(ap),
 		    ATMSSLN(ap));
 		break;
@@ -330,12 +330,12 @@ atmarp_print(netdissect_options *ndo,
 	case ARPOP_INVREPLY:
 		atmarp_addr_print(ndo, ATMSHA(ap), ATMSHRD_LEN(ap), ATMSSA(ap),
 		    ATMSSLN(ap));
-		ND_PRINT("at ");
+		ND_PRINT_CATEGORY(CATEGORY_PROTO_CHAT_SECONDARY, "at ");
 		atmarp_spaddr_print(ndo, ap, pro);
 		break;
 
 	case ARPOP_NAK:
-		ND_PRINT("for ");
+		ND_PRINT_CATEGORY(CATEGORY_PROTO_CHAT_SECONDARY, "for ");
 		atmarp_spaddr_print(ndo, ap, pro);
 		break;
 
@@ -391,7 +391,7 @@ arp_print(netdissect_options *ndo,
 	}
 
         if (!ndo->ndo_eflag) {
-            ND_PRINT("ARP, ");
+            ND_PRINT_CATEGORY(CATEGORY_PROTO_NAME, "ARP, ");
         }
 
         /* print hardware type/len and proto type/len */
@@ -419,18 +419,18 @@ arp_print(netdissect_options *ndo,
 	switch (op) {
 
 	case ARPOP_REQUEST:
-		ND_PRINT("who-has ");
+		ND_PRINT_CATEGORY(CATEGORY_PROTO_CHAT_SECONDARY, "who-has ");
 		tpaddr_print_ip(ndo, ap, pro);
 		if (isnonzero((const u_char *)THA(ap), HRD_LEN(ap)))
-			ND_PRINT(" (%s)",
+			ND_PRINT_CATEGORY(CATEGORY_PROTO_CHAT_PRIMARY, " (%s)",
 				  linkaddr_string(ndo, THA(ap), linkaddr, HRD_LEN(ap)));
-		ND_PRINT(" tell ");
+		ND_PRINT_CATEGORY(CATEGORY_PROTO_CHAT_SECONDARY, " tell ");
 		spaddr_print_ip(ndo, ap, pro);
 		break;
 
 	case ARPOP_REPLY:
 		spaddr_print_ip(ndo, ap, pro);
-		ND_PRINT(" is-at %s",
+		ND_PRINT_CATEGORY(CATEGORY_PROTO_CHAT_SECONDARY" is-at %s",
                           linkaddr_string(ndo, SHA(ap), linkaddr, HRD_LEN(ap)));
 		break;
 

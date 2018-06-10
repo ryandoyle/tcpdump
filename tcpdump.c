@@ -604,6 +604,7 @@ show_remote_devices_and_exit(void)
 #define OPTION_IMMEDIATE_MODE		130
 #define OPTION_PRINT			131
 #define OPTION_LIST_REMOTE_INTERFACES	132
+#define OPTION_COLOR	133
 
 static const struct option longopts[] = {
 #if defined(HAVE_PCAP_CREATE) || defined(_WIN32)
@@ -648,6 +649,7 @@ static const struct option longopts[] = {
 	{ "number", no_argument, NULL, '#' },
 	{ "print", no_argument, NULL, OPTION_PRINT },
 	{ "version", no_argument, NULL, OPTION_VERSION },
+	{ "color", no_argument, NULL, OPTION_COLOR },
 	{ NULL, 0, NULL, 0 }
 };
 
@@ -1725,6 +1727,10 @@ main(int argc, char **argv)
 
 		case OPTION_PRINT:
 			print = 1;
+			break;
+
+		case OPTION_COLOR:
+			ndo->ndo_use_color = 1;
 			break;
 
 		default:

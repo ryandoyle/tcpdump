@@ -345,6 +345,7 @@ ns_qprint(netdissect_options *ndo,
 	if (cp == NULL || !ND_TTEST_4(cp))
 		return(NULL);
 
+	ND_PAINT_CATEGORY_START(CATEGORY_PROTO_CHAT_PRIMARY);
 	/* print the qtype */
 	i = EXTRACT_BE_U_2(cp);
 	cp += 2;
@@ -364,6 +365,7 @@ ns_qprint(netdissect_options *ndo,
 
 	ND_PRINT("? ");
 	cp = ns_nprint(ndo, np, bp);
+	ND_PAINT_CATEGORY_END;
 	return(cp ? cp + 4 : NULL);
 }
 

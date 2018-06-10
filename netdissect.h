@@ -233,6 +233,7 @@ struct netdissect_options {
   int ndo_packet_number;	/* print a packet number in the beginning of line */
   int ndo_suppress_default_print; /* don't use default_print() for unknown packet types */
   int ndo_tstamp_precision;	/* requested time stamp precision */
+  int ndo_use_color;	/* requested coloring of output */
   const char *program_name;	/* Name of the program using the library */
 
   char *ndo_espsecret;
@@ -260,6 +261,10 @@ struct netdissect_options {
   int  (*ndo_printf)(netdissect_options *,
 		     const char *fmt, ...)
 		     PRINTFLIKE_FUNCPTR(2, 3);
+  /* pointer to function to do colored output */
+  int  (*ndo_printf_color)(netdissect_options *,
+		     const char *color, const char *fmt, ...)
+		     PRINTFLIKE_FUNCPTR(3, 4);
   /* pointer to function to output errors */
   void NORETURN_FUNCPTR (*ndo_error)(netdissect_options *,
 				     const char *fmt, ...)
@@ -368,7 +373,42 @@ struct netdissect_options {
 /* Bail out if "*(p)" was not captured */
 #define ND_TCHECK_SIZE(p) ND_TCHECK_LEN(p, sizeof(*(p)))
 
+#define BLACK "\x1b[30m"
+#define BLACK_BOLD "\x1b[30;1m"
+#define RED "\x1b[31m"
+#define RED_BOLD "\x1b[31;1m"
+#define GREEN "\x1b[32m"
+#define GREEN_BOLD "\x1b[32;1m"
+#define YELLOW "\x1b[33m"
+#define YELLOW_BOLD "\x1b[33;1m"
+#define BLUE "\x1b[34m"
+#define BLUE_BOLD "\x1b[34;1m"
+#define MAGENTA "\x1b[35m"
+#define MAGENTA_BOLD "\x1b[35;1m"
+#define CYAN "\x1b[36m"
+#define CYAN_BOLD "\x1b[36;1m"
+#define WHITE "\x1b[37m"
+#define WHITE_BOLD "\x1b[37;1m"
+#define RESET "\x1b[0m"
+
+/* High-level formatting */
+#define CATEGORY_TIMESTAMP GREEN_BOLD
+#define CATEGORY_PROTO_NAME GREEN
+/* Endpoint host/ports. Can be IP/MAC address pairs etc */
+#define CATEGORY_ENDPOINT CYAN
+/* Info about the encapsulated protocol */
+#define CATEGORY_PROTO_ENCAP_PRIMARY MAGENTA_BOLD
+#define CATEGORY_PROTO_ENCAP_SECONDARY MAGENTA
+/* Most important part of the packet, should be info on the highest-level protocol */
+#define CATEGORY_PROTO_CHAT_PRIMARY YELLOW_BOLD
+#define CATEGORY_PROTO_CHAT_SECONDARY YELLOW
+/* Any error that can be determined */
+#define CATEGORY_ERROR RED
+
 #define ND_PRINT(...) (ndo->ndo_printf)(ndo, __VA_ARGS__)
+#define ND_PRINT_CATEGORY(category, ...) (ndo->ndo_printf_color)(ndo, category, __VA_ARGS__)
+#define ND_PAINT_CATEGORY_START(category) if(ndo->ndo_use_color)(ndo->ndo_printf)(ndo, category)
+#define ND_PAINT_CATEGORY_END if(ndo->ndo_use_color)(ndo->ndo_printf)(ndo, RESET)
 #define ND_DEFAULTPRINT(ap, length) (*ndo->ndo_default_print)(ndo, ap, length)
 
 extern void ts_print(netdissect_options *, const struct timeval *);

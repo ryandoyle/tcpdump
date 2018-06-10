@@ -492,11 +492,31 @@ ndo_printf(netdissect_options *ndo, const char *fmt, ...)
 	return (ret);
 }
 
+static int
+ndo_printf_color(netdissect_options *ndo, const char *ansi_color, const char *fmt, ...)
+{
+	va_list args;
+	int ret;
+
+    if (ndo->ndo_use_color)
+	    fprintf(stdout, ansi_color);
+	va_start(args, fmt);
+	ret = vfprintf(stdout, fmt, args);
+	va_end(args);
+    if (ndo->ndo_use_color)
+	    fprintf(stdout, "\x1b[0m");
+
+	if (ret < 0)
+		ndo_error(ndo, "Unable to write output: %s", pcap_strerror(errno));
+	return (ret);
+}
+
 void
 ndo_set_function_pointers(netdissect_options *ndo)
 {
 	ndo->ndo_default_print=ndo_default_print;
 	ndo->ndo_printf=ndo_printf;
+	ndo->ndo_printf_color=ndo_printf_color;
 	ndo->ndo_error=ndo_error;
 	ndo->ndo_warning=ndo_warning;
 }

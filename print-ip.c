@@ -555,11 +555,11 @@ ip_print(netdissect_options *ndo,
 	    if (IP_V(ipds->ip) == 6)
 	      ND_PRINT("IP6, wrong link-layer encapsulation");
 	    else
-	      ND_PRINT("IP%u", IP_V(ipds->ip));
+	      ND_PRINT_CATEGORY(CATEGORY_PROTO_NAME, "IP%u", IP_V(ipds->ip));
 	    return;
 	}
 	if (!ndo->ndo_eflag)
-		ND_PRINT("IP ");
+		ND_PRINT_CATEGORY(CATEGORY_PROTO_NAME, "IP ");
 
 	ND_TCHECK_SIZE(ipds->ip);
 	if (length < sizeof (struct ip)) {
@@ -636,14 +636,25 @@ ip_print(netdissect_options *ndo,
              * On all but the last stick a "+" in the flags portion.
 	     * For unfragmented datagrams, note the don't fragment flag.
 	     */
-	    ND_PRINT(", id %u, offset %u, flags [%s], proto %s (%u)",
-                         EXTRACT_BE_U_2(ipds->ip->ip_id),
-                         (ipds->off & 0x1fff) * 8,
-                         bittok2str(ip_frag_values, "none", ipds->off&0xe000),
-                         tok2str(ipproto_values, "unknown", ip_proto),
-                         ip_proto);
+//	    ND_PRINT(", id %u, offset %u, flags [%s], proto %s (%u)",
+//                         EXTRACT_BE_U_2(ipds->ip->ip_id),
+//                         (ipds->off & 0x1fff) * 8,
+//                         bittok2str(ip_frag_values, "none", ipds->off&0xe000),
+//                         tok2str(ipproto_values, "unknown", ip_proto),
+//                         ip_proto);
+			ND_PRINT_CATEGORY(CATEGORY_PROTO_ENCAP_SECONDARY, ", id ");
+			ND_PRINT_CATEGORY(CATEGORY_PROTO_ENCAP_PRIMARY, "%u, ", EXTRACT_BE_U_2(ipds->ip->ip_id));
+			ND_PRINT_CATEGORY(CATEGORY_PROTO_ENCAP_SECONDARY, "offset ");
+			ND_PRINT_CATEGORY(CATEGORY_PROTO_ENCAP_PRIMARY, "%u, ", (ipds->off & 0x1fff) * 8);
+			ND_PRINT_CATEGORY(CATEGORY_PROTO_ENCAP_SECONDARY, "flags ");
+			ND_PRINT_CATEGORY(CATEGORY_PROTO_ENCAP_PRIMARY, "[%s], ",bittok2str(ip_frag_values, "none", ipds->off&0xe000));
+			ND_PRINT_CATEGORY(CATEGORY_PROTO_ENCAP_SECONDARY, "proto ");
+			ND_PRINT_CATEGORY(CATEGORY_PROTO_NAME, tok2str(ipproto_values, "unknown", ip_proto));
+			ND_PRINT_CATEGORY(CATEGORY_PROTO_ENCAP_PRIMARY, " (%u), ", ip_proto);
 
-            ND_PRINT(", length %u", EXTRACT_BE_U_2(ipds->ip->ip_len));
+
+            ND_PRINT_CATEGORY(CATEGORY_PROTO_ENCAP_SECONDARY, "length");
+            ND_PRINT_CATEGORY(CATEGORY_PROTO_ENCAP_PRIMARY, " %u", EXTRACT_BE_U_2(ipds->ip->ip_len));
 
             if ((hlen - sizeof(struct ip)) > 0) {
                 ND_PRINT(", options (");

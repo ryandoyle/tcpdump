@@ -233,7 +233,7 @@ ip6_print(netdissect_options *ndo, const u_char *bp, u_int length)
 	}
 
         if (!ndo->ndo_eflag)
-            ND_PRINT("IP6 ");
+            ND_PRINT_CATEGORY(CATEGORY_PROTO_NAME, "IP6 ");
 
 	if (IP6_VERSION(ip6) != 6) {
           ND_PRINT("version error: %u != 6", IP6_VERSION(ip6));

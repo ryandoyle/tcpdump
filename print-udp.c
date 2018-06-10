@@ -339,11 +339,11 @@ udpipaddr_print(netdissect_options *ndo, const struct ip *ip, int sport, int dpo
 	if (ip6) {
 		if (EXTRACT_U_1(ip6->ip6_nxt) == IPPROTO_UDP) {
 			if (sport == -1) {
-				ND_PRINT("%s > %s: ",
+				ND_PRINT_CATEGORY(CATEGORY_ENDPOINT, "%s > %s: ",
 					ip6addr_string(ndo, ip6->ip6_src),
 					ip6addr_string(ndo, ip6->ip6_dst));
 			} else {
-				ND_PRINT("%s.%s > %s.%s: ",
+				ND_PRINT_CATEGORY(CATEGORY_ENDPOINT, "%s.%s > %s.%s: ",
 					ip6addr_string(ndo, ip6->ip6_src),
 					udpport_string(ndo, sport),
 					ip6addr_string(ndo, ip6->ip6_dst),
@@ -351,7 +351,7 @@ udpipaddr_print(netdissect_options *ndo, const struct ip *ip, int sport, int dpo
 			}
 		} else {
 			if (sport != -1) {
-				ND_PRINT("%s > %s: ",
+				ND_PRINT_CATEGORY(CATEGORY_ENDPOINT, "%s > %s: ",
 					udpport_string(ndo, sport),
 					udpport_string(ndo, dport));
 			}
@@ -359,11 +359,11 @@ udpipaddr_print(netdissect_options *ndo, const struct ip *ip, int sport, int dpo
 	} else {
 		if (EXTRACT_U_1(ip->ip_p) == IPPROTO_UDP) {
 			if (sport == -1) {
-				ND_PRINT("%s > %s: ",
+				ND_PRINT_CATEGORY(CATEGORY_ENDPOINT, "%s > %s: ",
 					ipaddr_string(ndo, ip->ip_src),
 					ipaddr_string(ndo, ip->ip_dst));
 			} else {
-				ND_PRINT("%s.%s > %s.%s: ",
+				ND_PRINT_CATEGORY(CATEGORY_ENDPOINT, "%s.%s > %s.%s: ",
 					ipaddr_string(ndo, ip->ip_src),
 					udpport_string(ndo, sport),
 					ipaddr_string(ndo, ip->ip_dst),
@@ -371,7 +371,7 @@ udpipaddr_print(netdissect_options *ndo, const struct ip *ip, int sport, int dpo
 			}
 		} else {
 			if (sport != -1) {
-				ND_PRINT("%s > %s: ",
+				ND_PRINT_CATEGORY(CATEGORY_ENDPOINT, "%s > %s: ",
 					udpport_string(ndo, sport),
 					udpport_string(ndo, dport));
 			}

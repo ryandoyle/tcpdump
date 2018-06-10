@@ -331,14 +331,14 @@ ts_print(netdissect_options *ndo,
 
 	case 0: /* Default */
 		s = (tvp->tv_sec + thiszone) % 86400;
-		ND_PRINT("%s ", ts_format(ndo, s, tvp->tv_usec, buf));
+		ND_PRINT_CATEGORY(CATEGORY_TIMESTAMP, "%s ", ts_format(ndo, s, tvp->tv_usec, buf));
 		break;
 
 	case 1: /* No time stamp */
 		break;
 
 	case 2: /* Unix timeval style */
-		ND_PRINT("%s ", ts_unix_format(ndo,
+		ND_PRINT_CATEGORY(CATEGORY_TIMESTAMP, "%s ", ts_unix_format(ndo,
 			  tvp->tv_sec, tvp->tv_usec, buf));
 		break;
 
@@ -368,9 +368,9 @@ ts_print(netdissect_options *ndo,
 		else
 			netdissect_timevalsub(tvp, &tv_ref, &tv_result, nano_prec);
 
-		ND_PRINT((negative_offset ? "-" : " "));
+		ND_PRINT_CATEGORY(CATEGORY_TIMESTAMP, (negative_offset ? "-" : " "));
 
-		ND_PRINT("%s ", ts_format(ndo,
+		ND_PRINT_CATEGORY(CATEGORY_TIMESTAMP, "%s ", ts_format(ndo,
 			  tv_result.tv_sec, tv_result.tv_usec, buf));
 
                 if (ndo->ndo_tflag == 3)
@@ -384,7 +384,7 @@ ts_print(netdissect_options *ndo,
 		if (!tm)
 			ND_PRINT("Date fail  ");
 		else
-			ND_PRINT("%04d-%02d-%02d %s ",
+			ND_PRINT_CATEGORY(CATEGORY_TIMESTAMP, "%04d-%02d-%02d %s ",
                                tm->tm_year+1900, tm->tm_mon+1, tm->tm_mday,
                                ts_format(ndo, s, tvp->tv_usec, buf));
 		break;
